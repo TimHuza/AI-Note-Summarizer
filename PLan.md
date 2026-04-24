@@ -1,308 +1,234 @@
-Got it — here’s a **clean, professional, implementation-focused plan** you can follow like a real mini project roadmap. No code, just structure, decisions, and execution steps.
+# 📝 AI Note Summarizer — Project Plan
+
+## 1. Define the Flow (before coding anything else)
+
+Make sure your pipeline is clear:
+
+**Input → Split → Summarize chunks → Combine → Format output**
+
+At this stage, write this down somewhere. Every step you build should match this flow.
 
 ---
 
-# 📝 AI Note Summarizer — Professional Project Plan
+## 2. Clean Input Handling
 
-## 🔷 1. Project Objective
+You already have `load_file()` — now improve it:
 
-Build a local AI-powered tool that:
+* Support at least:
 
-* Accepts long-form notes (text or file)
-* Processes them using an LLM
-* Outputs structured bullet-point summaries
-* Supports multiple summary styles (simple, detailed, exam-ready)
+  * `.txt`
+  * (optional later: `.md`, `.pdf`)
+* Handle errors:
 
-**Success Criteria:**
+  * file not found
+  * empty file
+* Normalize text:
 
-* Summaries are shorter, clear, and readable
-* Works reliably on long inputs
-* Runs fully locally using Ollama
+  * remove extra spaces
+  * fix weird line breaks
 
----
-
-## 🔷 2. System Architecture Overview
-
-### Core Components:
-
-1. **Input Layer**
-
-   * Text input (CLI)
-   * File input (TXT, optional PDF)
-
-2. **Processing Layer**
-
-   * Text cleaning
-   * Text chunking (for long inputs)
-
-3. **LLM Layer**
-
-   * Prompt templates
-   * Summarization logic via LangChain
-
-4. **Output Layer**
-
-   * Bullet-point formatted summaries
-   * Style-based formatting
+👉 Goal: Always return clean, usable text.
 
 ---
 
-## 🔷 3. Development Phases
+## 3. Chunking Strategy (you started this ✔)
+
+You used `RecursiveCharacterTextSplitter` — now refine it:
+
+* Choose:
+
+  * chunk size (e.g. 500–1000 chars)
+  * overlap (e.g. 50–100)
+* Test with:
+
+  * small text
+  * very long text
+
+👉 Goal: Each chunk should be readable on its own.
 
 ---
 
-## 🧩 Phase 1 — Environment & Validation
+## 4. Prompt Design (VERY important)
 
-**Goal:** Ensure all tools work before building logic
+This is where your project becomes “AI-powered” instead of random output.
 
-### Tasks:
+Create **3 prompt styles**:
 
-* Install Python and dependencies
-* Install and configure Ollama
-* Download a lightweight model (e.g., LLaMA-based)
+### 1. Simple
 
-### Validation:
+* Short bullet points
+* Easy words
 
-* Run a simple prompt in Ollama
-* Confirm local inference works
+### 2. Detailed
 
----
+* More explanation
+* Still structured
 
-## 🧩 Phase 2 — Minimal Working Prototype (MVP)
+### 3. Exam-ready
 
-**Goal:** Build the simplest working summarizer
+* Key facts only
+* Clear, precise bullets
 
-### Features:
+👉 Each prompt should clearly instruct:
 
-* Accept raw text input
-* Send it to the LLM
-* Return a bullet-point summary
-
-### Focus:
-
-* Prompt design (very important)
-* Clean output formatting
-
-### Deliverable:
-
-* CLI tool that summarizes pasted text
+* “Summarize this text”
+* “Use bullet points”
+* “Be concise”
 
 ---
 
-## 🧩 Phase 3 — Prompt Engineering
+## 5. Ollama Integration
 
-**Goal:** Improve summary quality
+Set up Ollama as your LLM backend.
 
-### Tasks:
+Decide:
 
-* Design structured prompts:
+* Which model (e.g. lightweight vs stronger)
+* Temperature (keep low for consistency)
 
-  * Bullet points only
-  * Short and clear sentences
-  * No unnecessary explanation
+Test:
 
-### Add styles:
+* Run one chunk manually
+* Check output quality
 
-* **Simple** → short bullets
-* **Detailed** → more explanation
-* **Exam-ready** → key facts + definitions
-
-### Outcome:
-
-* Consistent, predictable summaries
+👉 Goal: Make sure it consistently follows your prompt.
 
 ---
 
-## 🧩 Phase 4 — Input Expansion
+## 6. Summarization Pipeline
 
-**Goal:** Support file-based input
+Now connect everything:
 
-### Tasks:
+### Step-by-step logic:
 
-* Add TXT file loader
-* (Optional) Add PDF loader
+1. Take chunks
+2. Send each chunk to Ollama
+3. Collect summaries
+4. Combine them
 
-### Considerations:
+Then add:
 
-* File size handling
-* Encoding issues
+* Final pass summarization (optional but powerful)
 
-### Deliverable:
+  * summarize the summaries → cleaner output
 
-* User can choose:
-
-  * Paste text
-  * Load file
+👉 This makes your output much more professional.
 
 ---
 
-## 🧩 Phase 5 — Handling Long Text (Critical Phase)
+## 7. Output Formatting
 
-**Goal:** Make system scalable
+Make your output clean and readable:
 
-### Problem:
+* Bullet points only
+* Add section titles (optional)
+* Remove duplicates
+* Keep consistent formatting
 
-LLMs cannot handle very large text at once
+Optional:
 
-### Solution:
+* Save to file:
 
-* Split text into chunks
-* Process each chunk separately
-* Combine summaries
-
-### Key Concepts:
-
-* Chunk size (balance between context and performance)
-* Overlap between chunks (to avoid losing meaning)
-
-### Outcome:
-
-* Works on long notes without breaking
+  * `.txt`
+  * `.md`
 
 ---
 
-## 🧩 Phase 6 — Summary Aggregation
+## 8. CLI Interface (Beginner but Professional)
 
-**Goal:** Produce one clean final output
+Make it usable like a real tool:
 
-### Tasks:
+User should be able to:
 
-* Merge chunk summaries
-* Optionally re-summarize combined result
+* pass file path
+* choose style:
 
-### Strategy:
+  * simple
+  * detailed
+  * exam
 
-* First pass → chunk summaries
-* Second pass → final summary (optional but better)
+Example flow (no code, just behavior):
 
----
-
-## 🧩 Phase 7 — User Experience (UX)
-
-**Goal:** Make it usable and clean
-
-### Add:
-
-* Input menu:
-
-  * Text or file
-* Style selection:
-
-  * Simple / Detailed / Exam
-
-### Improve:
-
-* Output formatting (spacing, bullets)
-* Clear labels
+> user runs script → chooses style → gets summary
 
 ---
 
-## 🧩 Phase 8 — Testing & Validation
+## 9. Testing (Don’t skip this)
 
-**Goal:** Ensure quality and reliability
-
-### Test Cases:
+Test with different inputs:
 
 * Short notes
-* Long notes
-* Messy/unstructured text
-* School material
+* Long lecture notes
+* Messy text
+* Repeated text
 
-### Evaluate:
+Check:
 
-* Clarity
-* Accuracy
-* Compression (how much shorter it is)
-
----
-
-## 🧩 Phase 9 — Optimization (Optional)
-
-**Goal:** Improve performance and quality
-
-### Options:
-
-* Try different models in Ollama
-* Adjust chunk size
-* Improve prompts further
+* Is it too long?
+* Are bullets clear?
+* Does it follow style?
 
 ---
 
-## 🧩 Phase 10 — Final Enhancements (Optional)
+## 10. Project Structure (Make it look pro)
 
-You can extend the project with:
+Organize files like this:
 
-* Save summaries to file
-* Markdown output
-* Highlight keywords
-* Simple UI (web or desktop)
+```
+project/
+│
+├── main.py
+├── loader.py
+├── splitter.py
+├── summarizer.py
+├── prompts.py
+├── utils.py
+└── outputs/
+```
 
----
-
-# 🔷 4. Technical Design Decisions
-
-### Model Choice:
-
-* Smaller model → faster, less accurate
-* Larger model → slower, better summaries
-
-### Chunking Strategy:
-
-* ~500–1000 tokens per chunk
-* Overlap: ~10–20%
-
-### Prompt Strategy:
-
-* Clear instructions
-* Structured output format
-* Avoid vague wording
+👉 This alone makes your project look 10x more professional.
 
 ---
 
-# 🔷 5. Project Timeline (Realistic Beginner Plan)
+## 11. Optional Upgrades (if you want to level up)
 
-### Day 1:
+### ⭐ Add multiple file support
 
-* Setup + run Ollama
-* Build basic summarizer
+* summarize multiple notes at once
 
-### Day 2:
+### ⭐ Add memory / caching
 
-* Improve prompts
-* Add styles
+* avoid re-summarizing same file
 
-### Day 3:
+### ⭐ Add simple UI
 
-* Add file input
-* Implement chunking
+* terminal menu OR basic web app
 
-### Day 4:
+### ⭐ Add markdown output
 
-* Combine summaries
-* Clean output
-
-### Day 5:
-
-* Testing + polishing
+* structured notes with headings
 
 ---
 
-# 🔷 6. Final Deliverable
+## 12. Final Step: Documentation
 
-A working application that:
+Create a README with:
 
-* Accepts long notes (text/file)
-* Uses LangChain + Ollama
-* Outputs structured summaries
-* Supports multiple styles
-* Handles long inputs efficiently
+* Project name
+* What it does
+* Tools used (Python, LangChain, Ollama)
+* How to run it
+* Example input/output
 
 ---
 
-# 🔷 7. What Makes This a Strong Project
+# 🧠 Key Advice (important)
 
-This isn’t just “summarization” — it shows:
+* Don’t overcomplicate early — get **basic version working first**
+* Focus on:
 
-* Understanding of LLM pipelines
-* Prompt engineering skills
-* Handling real-world constraints (token limits)
+  * clean pipeline
+  * good prompts
+  * readable output
+
+That’s what makes this project actually impressive.
