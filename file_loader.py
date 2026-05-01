@@ -1,5 +1,6 @@
 from langchain_community.document_loaders import TextLoader, PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
+import os
 
 
 def load_file(file_path: str):
@@ -7,9 +8,11 @@ def load_file(file_path: str):
     Load a text, markdown or pdf file and split it into chunks.
     """
 
+    file_ext = os.path.splitext(file_path)[1]
+
     file_type_support = [".txt", ".md", ".pdf"]
 
-    if file_path not in file_type_support:
+    if file_ext not in file_type_support:
         print("File type not supported")
         return None
     # 1. Choose the right loader based on the file extension
