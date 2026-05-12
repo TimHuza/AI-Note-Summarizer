@@ -1,6 +1,6 @@
 # 📝 AI Note Summarizer Documentation
 
-> An intelligent, offline-first CLI tool that reads your notes and produces clean, structured summaries — powered by **LangChain** and **Ollama** (Llama 3.1).
+> An intelligent, offline-first **web UI tool** that reads your notes and produces clean, structured summaries — powered by **LangChain**, **Ollama** (Llama 3.1), and **Streamlit**.
 
 ---
 
@@ -25,7 +25,7 @@
 
 ## Overview
 
-**AI Note Summarizer** is a command-line application that takes your text notes — whether they're plain `.txt` files, Markdown `.md` documents, or PDF files — and uses a locally running large language model (LLM) to produce a concise, readable summary.
+**AI Note Summarizer** is a **Streamlit web application** that takes your text notes — whether they're plain `.txt` files, Markdown `.md` documents, or PDF files — and uses a locally running large language model (LLM) to produce a concise, readable summary.
 
 Because it runs entirely **on your own machine** using Ollama, no data is ever sent to an external server. Your notes stay private.
 
@@ -38,12 +38,14 @@ The tool was built using:
 | [`langchain-community`](https://pypi.org/project/langchain-community/) | Document loaders for `.txt`, `.md`, and `.pdf` files |
 | [`langchain-text-splitters`](https://pypi.org/project/langchain-text-splitters/) | Splitting large documents into manageable chunks |
 | [`Ollama`](https://ollama.com/) | Running the Llama 3.1 8B model locally on your machine |
+| [`Streamlit`](https://streamlit.io/) | Powering the interactive web UI |
 
 ---
 
 ## Features
 
 - 🔒 **100% offline** — your notes never leave your computer
+- 🖥️ **Streamlit web UI** — no terminal commands needed after launch
 - 📄 Supports `.txt`, `.md`, and `.pdf` file formats
 - 🎯 Three distinct **summary styles**: Simple, Detailed, and Exam-focused
 - 💾 Option to **save** the generated summary to a `notes.txt` file
@@ -60,7 +62,7 @@ AI-Note-Summarizer/
 ├── data/                   # ← Place your input files HERE
 │   └── notes.txt           # Auto-created when you save a summary
 │
-├── main.py                 # Entry point — runs the full summarization pipeline
+├── ui.py                   # Entry point — launches the Streamlit web UI
 ├── file_loader.py          # Loads and chunks the input document
 ├── note_engine.py          # Handles saving summaries to disk
 ├── prompts.py              # Defines the 3 summarization prompt templates
@@ -141,45 +143,39 @@ langchain-community
 langchain-core
 langchain-ollama
 langchain-text-splitters
+streamlit
 ```
 
 ---
 
 ## How to Run
 
-Once your environment is set up and Ollama is running, start the application with:
+Once your environment is set up and Ollama is running, launch the web UI with:
 
 ```bash
-python main.py
+streamlit run ui.py
 ```
 
-The program will guide you through three simple steps:
+Streamlit will open the app automatically in your default browser (usually at `http://localhost:8501`). The interface guides you through three simple steps:
 
-### Step 1 — Choose a summary style
+### Step 1 — Enter the filename
 
-```
-Enter your desired answer style (simple, detailed, exam):
-```
+Type **only the filename** (e.g., `cucumbers.txt`) into the text input field. The app automatically looks inside the `data/` folder — do not include the folder prefix.
 
-Type one of: `simple`, `detailed`, or `exam` and press **Enter**.
+### Step 2 — Choose a summary style
 
-### Step 2 — Enter the filename
+Use the **dropdown selector** to pick one of:
+- `simple` — quick bullet-point overview
+- `detailed` — comprehensive full-sentence bullets
+- `exam` — dense, fact-focused study bullets
 
-```
-Enter the path to the file you want to summarize:
-```
+### Step 3 — Summarize and optionally save
 
-Type **only the filename** (e.g., `cucumbers.txt`), not the full path. The program automatically looks inside the `data/` folder.
+Click the **"Summarize"** button. The summary will appear on the page. You'll then see a dropdown asking:
 
-### Step 3 — View and optionally save the result
+> Do you want to save this note? (yes/no)
 
-The summary will be printed to the terminal. You'll then be asked:
-
-```
-Do you want to save this note? (yes/no):
-```
-
-Type `yes` to append the summary to `data/notes.txt`, or `no` to exit without saving.
+Select `yes` to append the summary to `data/notes.txt`, or `no` to continue without saving.
 
 ---
 
@@ -195,8 +191,6 @@ AI-Note-Summarizer/
     └── cucumbers.txt   ← place it here
 ```
 
-![image](src/cucumbers.png)
-
 Then, when the program asks for the filename, simply type:
 
 ```
@@ -206,8 +200,6 @@ cucumbers.txt
 Do **not** include the `data/` prefix — the application adds that automatically.
 
 > 💾 **Don't delete `data/notes.txt`!** If you delete it, the app will recreate an empty file — but all your previously saved summaries will be permanently lost. Keep it around as your personal summary history.
-
-![image](src/notes.png)
 
 ---
 
@@ -279,14 +271,13 @@ When you choose to save, the summary is **appended** to `data/notes.txt`. This m
 
 ## Module Breakdown
 
-### `main.py`
-The application's entry point. Orchestrates the entire pipeline:
-1. Prompts the user for a summary style
+### `ui.py`
+The application's entry point. Renders the Streamlit web interface and orchestrates the entire pipeline:
+1. Renders a text input for the filename and a dropdown for summary style selection
 2. Loads the model via `ChatOllama`
-3. Prompts the user for a filename and loads it via `file_loader`
-4. Joins the document chunks into a single text block
-5. Formats the chosen prompt and invokes the LLM
-6. Displays the response and optionally saves it
+3. On button click, loads the file via `file_loader` and joins chunks into a single text block
+4. Formats the chosen prompt and invokes the LLM
+5. Displays the response in the browser and offers a save dropdown
 
 ### `file_loader.py`
 Handles document ingestion. The `load_file(file_path)` function:
@@ -313,22 +304,22 @@ Handles persistence. The `save_note(note)` function:
 
 Here's a full end-to-end example using the included `cucumbers.txt` file:
 
-**1. Start the app:**
+**1. Launch the app:**
 ```bash
-python main.py
+streamlit run ui.py
+```
+Your browser will open at `http://localhost:8501`.
+
+**2. Enter the filename:**
+In the text input field, type:
+```
+cucumbers.txt
 ```
 
-**2. Choose exam style:**
-```
-Enter your desired answer style (simple, detailed, exam): exam
-```
+**3. Choose exam style:**
+Use the dropdown to select `exam`.
 
-**3. Enter filename:**
-```
-Enter the path to the file you want to summarize: cucumbers.txt
-```
-
-**4. Wait for the model to respond** (may take 10–60 seconds depending on your hardware):
+**4. Click "Summarize"** and wait for the model to respond (may take 10–60 seconds depending on your hardware):
 ```
 - Cucumbers: botanically a fruit (Cucumis sativus), member of gourd family
 - Water content: ~95%
@@ -338,9 +329,8 @@ Enter the path to the file you want to summarize: cucumbers.txt
 ```
 
 **5. Save the result:**
+In the save dropdown, select `yes`. The page will confirm:
 ```
-Do you want to save this note? (yes/no): yes
-
 Note saved successfully!
 Note saved in 'notes.txt' file which is in 'data' folder.
 ```
@@ -349,7 +339,7 @@ Note saved in 'notes.txt' file which is in 'data' folder.
 
 ## Troubleshooting
 
-### ❌ `ModuleNotFoundError: No module named 'langchain'`
+### ❌ `ModuleNotFoundError: No module named 'langchain'` or `No module named 'streamlit'`
 You are likely running Python outside of the virtual environment.
 
 **Fix:** Activate the virtual environment first:
@@ -360,7 +350,7 @@ venv\Scripts\activate
 # macOS / Linux
 source venv/bin/activate
 ```
-Then run `python main.py` again.
+Then run `streamlit run ui.py` again.
 
 ---
 
@@ -394,7 +384,7 @@ The file you entered was not found in the `data/` folder.
 Response times depend on your CPU/GPU. On slower machines, a response may take 30 seconds to 2 minutes.
 
 **Tips to speed things up:**
-- Use a lighter model: `ollama pull llama3.2:3b` and update `main.py` to use `"llama3.2:3b"`
+- Use a lighter model: `ollama pull llama3.2:3b` and update `ui.py` to use `"llama3.2:3b"`
 - Close other applications to free up RAM
 - If you have an NVIDIA GPU, make sure Ollama is using it (it does so automatically on supported systems)
 
@@ -404,12 +394,13 @@ Response times depend on your CPU/GPU. On slower machines, a response may take 3
 
 Features planned for future versions:
 
-- [ ] GUI / web interface
+- [x] ~~GUI / web interface~~ ✅ Released in UI Release
 - [ ] Batch summarization (process an entire folder at once)
 - [ ] Support for scanned PDFs via OCR
 - [ ] Export summaries to `.md` or `.pdf`
 - [ ] Multiple language support for the prompt modes
 - [ ] Support for additional models (Mistral, Gemma, Phi)
+- [ ] Streamlit file uploader (drag-and-drop instead of manual `data/` placement)
 
 ---
 
